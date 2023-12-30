@@ -1,6 +1,6 @@
 package co.nuqui.tech.mshumans.infrastructure.controller;
 
-import co.nuqui.tech.mshumans.domain.dto.human.Human;
+import co.nuqui.tech.mshumans.domain.dto.Human;
 import co.nuqui.tech.mshumans.domain.service.HumanService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;

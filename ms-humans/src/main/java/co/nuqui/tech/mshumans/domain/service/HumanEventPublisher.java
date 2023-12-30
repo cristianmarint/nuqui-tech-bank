@@ -1,30 +1,31 @@
 package co.nuqui.tech.mshumans.domain.service;
 
-import co.nuqui.tech.mshumans.domain.dto.human.Human;
+import co.nuqui.tech.mshumans.domain.dto.Human;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
-@Service
+@Component
 public class HumanEventPublisher {
 
-    private final RabbitTemplate rabbitTemplate;
-    private final String exchange;
-    private final String defaultReceiveQueue;
-    private final String routingKey;
-
     @Autowired
-    public HumanEventPublisher(RabbitTemplate rabbitTemplate,
-                               String exchange,
-                               String defaultReceiveQueue,
-                               String routingKey) {
+    private final RabbitTemplate rabbitTemplate;
+
+    @Value("${spring.rabbitmq.human.exchange}")
+    private String humanExchange;
+
+    @Value("${spring.rabbitmq.human.default-receive-queue}")
+    private String humanQueue;
+
+    @Value("${spring.rabbitmq.human.routing-key}")
+    private String humanRoutingKey;
+
+    public HumanEventPublisher(RabbitTemplate rabbitTemplate) {
         this.rabbitTemplate = rabbitTemplate;
-        this.exchange = exchange;
-        this.defaultReceiveQueue = defaultReceiveQueue;
-        this.routingKey = routingKey;
     }
 
     public void publish(Human human) {
-        rabbitTemplate.convertAndSend(exchange, routingKey, human);
+        rabbitTemplate.convertAndSend(humanExchange, humanRoutingKey, human);
     }
 }

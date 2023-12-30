@@ -1,7 +1,7 @@
 package co.nuqui.tech.mshumans.domain.service;
 
-import co.nuqui.tech.mshumans.domain.dto.human.Human;
-import co.nuqui.tech.mshumans.infrastructure.controller.persistance.HumanRepository;
+import co.nuqui.tech.mshumans.domain.dto.Human;
+import co.nuqui.tech.mshumans.infrastructure.persistance.HumanRepository;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
