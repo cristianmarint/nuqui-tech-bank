@@ -4,9 +4,9 @@ services:
   postgres:
     image: postgres:latest
     environment:
-      POSTGRES_DB: deposits,humans
-      POSTGRES_USER: myuser
-      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: nuqui
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: appuser_password
     ports:
       - "5432:5432"
 
@@ -21,10 +21,13 @@ services:
       - "27017:27017"
 
   rabbitmq:
-    image: rabbitmq:latest
+    image: rabbitmq:3.8-management
     environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_DEFAULT_USER: appuser
+      RABBITMQ_DEFAULT_PASS: appuser_password
+      # RABBITMQ_DEFAULT_VHOST: /nuquivhost
     ports:
       - "5672:5672"
       - "15672:15672"
+    # volumes:
+    #   - ./rabbitmq-config:/etc/rabbitmq
