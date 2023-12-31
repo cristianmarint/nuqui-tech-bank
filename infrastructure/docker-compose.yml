@@ -11,9 +11,18 @@ services:
       - "5432:5432"
 
   dynamodb:
-    image: amazon/dynamodb-local
+    image: "amazon/dynamodb-local:latest"
+    container_name: dynamodb
     ports:
       - "8000:8000"
+    # volumes:
+    #  - "./docker/dynamodb:/home/dynamodblocal/data"
+    #   working_dir: /home/dynamodblocal
+    #   command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
+    environment:
+      - AWS_ACCESS_KEY_ID="your1access2key3id"
+      - AWS_SECRET_ACCESS_KEY="your1secret2key"
+      - AWS_DEFAULT_REGION=us-east-1
 
   mongodb:
     image: mongo:latest
@@ -25,9 +34,6 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: appuser
       RABBITMQ_DEFAULT_PASS: appuser_password
-      # RABBITMQ_DEFAULT_VHOST: /nuquivhost
     ports:
       - "5672:5672"
       - "15672:15672"
-    # volumes:
-    #   - ./rabbitmq-config:/etc/rabbitmq

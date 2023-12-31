@@ -13,29 +13,43 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class DynamoDbConfig {
 
-    @Value("${aws.accessKeyId}")
+    @Value("${aws.dynamodb.accessKey}")
     private String accessKey;
 
-    @Value("${aws.secretKey}")
+    @Value("${aws.dynamodb.secretKey}")
     private String secretKey;
 
-    @Value("${aws.region}")
+    @Value("${aws.dynamodb.region}")
     private String region;
 
     @Value("${aws.dynamodb.endpoint}")
     private String endpoint;
 
     @Value("${dynamodb.table-name}")
-    private String tableName;
+    private String table;
 
     @Bean
     public DynamoDBMapper mapper() {
-        return new DynamoDBMapper(amazonDynamoDBConfig());
+        return new DynamoDBMapper(buildAmazonDynamoDB());
     }
 
-    private AmazonDynamoDB amazonDynamoDBConfig() {
-        return AmazonDynamoDBClientBuilder.standard()
-                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endpoint, region))
-                .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKey, secretKey))).build();
+    private AmazonDynamoDB buildAmazonDynamoDB() {
+        return AmazonDynamoDBClientBuilder
+                .standard()
+                .withEndpointConfiguration(
+                        new AwsClientBuilder.EndpointConfiguration(
+                                endpoint,
+                                region
+                        )
+                )
+                .withCredentials(
+                        new AWSStaticCredentialsProvider(
+                                new BasicAWSCredentials(
+                                        accessKey,
+                                        secretKey
+                                )
+                        )
+                )
+                .build();
     }
 }

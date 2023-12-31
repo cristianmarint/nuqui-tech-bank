@@ -1,0 +1,38 @@
+{
+  "properties": [
+    {
+      "name": "aws.dynamodb.accessKey",
+      "type": "java.lang.String",
+      "description": "Description for aws.dynamodb.accessKey."
+    },
+    {
+      "name": "aws.dynamodb.secretKey",
+      "type": "java.lang.String",
+      "description": "Description for aws.dynamodb.secretKey."
+    },
+    {
+      "name": "aws.dynamodb.region",
+      "type": "java.lang.String",
+      "description": "Description for aws.dynamodb.region."
+    },
+    {
+      "name": "spring.rabbitmq.human.exchange",
+      "type": "java.lang.String",
+      "description": "Description for spring.rabbitmq.human.exchange."
+    },
+    {
+      "name": "spring.rabbitmq.human.default-receive-queue",
+      "type": "java.lang.String",
+      "description": "Description for spring.rabbitmq.human.default-receive-queue."
+    },
+    {
+      "name": "spring.rabbitmq.human.routing-key",
+      "type": "java.lang.String",
+      "description": "Description for spring.rabbitmq.human.routing-key."
+    },
+    {
+      "name": "dynamodb.table-name",
+      "type": "java.lang.String",
+      "description": "Description for dynamodb.table-name."
+    }
+  ] }

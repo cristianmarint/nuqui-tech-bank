@@ -37,7 +37,8 @@ public class UserService {
                 .password(human.getPassword())
                 .build();
 
-        if (userRepository.findByEmailIgnoreCase(user.getEmail()) == null && userRepository.findByUsernameIgnoreCase(user.getUsername()) == null) {
+        if (userRepository.findByEmailIgnoreCase(user.getEmail()) == null &&
+                userRepository.findByUsernameIgnoreCase(user.getUsername()) == null) {
             userRepository.save(user);
             userEventPublisher.publish(user);
             return;
@@ -50,21 +51,21 @@ public class UserService {
         String token = jwtProvider.generateToken(user);
         user.setToken(token);
         user.setStatus("LOGIN SUCCESSFUL");
-        userRepository.edit(user);
+        userRepository.save(user);
         return user;
     }
 
     public User logout(User user) {
         user.setStatus("LOGOUT SUCCESSFUL");
         user.setToken(null);
-        userRepository.edit(user);
+        userRepository.save(user);
         return user;
     }
 
     public User delete(User user) {
         user.setStatus("DELETED SUCCESSFUL");
-        user.setDeletedAt(Instant.now());
-        userRepository.edit(user);
+        user.setDeletedAt(Instant.now().toString());
+        userRepository.save(user);
         return user;
     }
 
