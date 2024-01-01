@@ -14,7 +14,7 @@ public class HumanRestClient {
     @Value("${ms-humans.search.endpoint}")
     private String endpoint;
 
-    public Human findByIdentification(Long humanId) {
+    public Human findById(Long humanId) {
         try {
             URI uri = UriComponentsBuilder.fromUriString(endpoint)
                     .queryParam("id", humanId)

@@ -16,6 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.Objects;
+
+import static co.nuqui.tech.msusers.domain.dto.UserStatusConstants.*;
 
 
 @Service
@@ -49,6 +52,9 @@ public class UserService {
     @Value("${spring.rabbitmq.user.deleted.routing-key}")
     private String userDeletedRoutingKey;
 
+    @Value("${spring.rabbitmq.user.blocked.routing-key}")
+    private String userBlockedRoutingKey;
+
     @Value("${spring.rabbitmq.user.inactive.routing-key}")
     private String userInactiveRoutingKey;
 
@@ -69,7 +75,7 @@ public class UserService {
                 .password(human.getPassword())
                 .build();
 
-        if (userRepository.findByEmailIgnoreCase(user.getEmail()) == null &&
+        if (userRepository.findByEmail(user.getEmail()) == null &&
                 userRepository.findByUsernameIgnoreCase(user.getUsername()) == null) {
             user.setRecentActivity("CREATED SUCCESSFUL AT " + Instant.now().toString());
             user.setStatus("ACTIVE");
@@ -83,62 +89,90 @@ public class UserService {
 
 
     public User login(User user) {
-        user.setToken(jwtProvider.generateToken(user));
-        user.setRecentActivity("LOGIN SUCCESSFUL AT " + Instant.now().toString());
-        userRepository.save(user);
-        logger.info("login user: {}", user);
-        userEventPublisher.publish(userLoginRoutingKey, user);
-        return user;
+        User currentRecord = userRepository.findByEmail(user.getEmail());
+        logger.info("login currentRecord: {}", currentRecord);
+
+        Objects.requireNonNull(currentRecord, "USER NOT FOUND " + user.getEmail());
+        if (!currentRecord.getPassword().equals(user.getPassword())) throw new GlobalException("INVALID PASSWORD");
+        if (currentRecord.getStatus().equals(BLOCKED))
+            throw new GlobalException("USER ACCOUNTS CANNOT BE ACCESS " + BLOCKED + " " + user.getEmail());
+        if (currentRecord.getStatus().equals(INACTIVE))
+            throw new GlobalException("USER ACCOUNTS CANNOT BE ACCESS " + INACTIVE + " " + user.getEmail());
+        if (currentRecord.getStatus().equals(DELETED))
+            throw new GlobalException("USER ACCOUNTS CANNOT BE ACCESS " + DELETED + " " + user.getEmail());
+
+        currentRecord.setToken(jwtProvider.generateToken(user));
+        currentRecord.setRecentActivity("LOGIN SUCCESSFUL AT " + Instant.now().toString());
+        userRepository.update(currentRecord);
+        logger.info("login user: {}", currentRecord);
+        userEventPublisher.publish(userLoginRoutingKey, currentRecord);
+        return currentRecord;
     }
 
     public User logout(User user) {
-        user.setRecentActivity("LOGOUT SUCCESSFUL AT " + Instant.now().toString());
-        user.setToken(null);
-        userRepository.save(user);
-        userEventPublisher.publish(userLogoutRoutingKey, user);
-        logger.info("logout user: {}", user);
-        return user;
+        User currentRecord = userRepository.findByEmail(user.getEmail());
+        currentRecord.setRecentActivity("LOGOUT SUCCESSFUL AT " + Instant.now().toString());
+        currentRecord.setToken(null);
+
+        userRepository.update(currentRecord);
+        userEventPublisher.publish(userLogoutRoutingKey, currentRecord);
+        logger.info("logout user: {}", currentRecord);
+        return currentRecord;
     }
 
     public User delete(User user) {
-        user.setRecentActivity("DELETED SUCCESSFUL AT " + Instant.now().toString());
-        user.setStatus("DELETED");
-        user.setDeletedAt(Instant.now().toString());
-        userRepository.save(user);
-        userEventPublisher.publish(userDeletedRoutingKey, user);
-        logger.info("deleted user: {}", user);
-        return user;
+        User currentRecord = userRepository.findByEmail(user.getEmail());
+        currentRecord.setRecentActivity("DELETED SUCCESSFUL AT " + Instant.now().toString());
+        currentRecord.setStatus(DELETED);
+        currentRecord.setDeletedAt(Instant.now().toString());
+        userRepository.update(user);
+        userEventPublisher.publish(userDeletedRoutingKey, currentRecord);
+        logger.info("deleted user: {}", currentRecord);
+        return currentRecord;
     }
 
     public User active(User user) {
-        user.setRecentActivity("ACTIVE SUCCESSFUL AT " + Instant.now().toString());
-        user.setStatus("ACTIVE");
-        user.setDeletedAt(Instant.now().toString());
-        userRepository.save(user);
-        userEventPublisher.publish(userActiveRoutingKey, user);
-        logger.info("active user: {}", user);
-        return user;
+        User currentRecord = userRepository.findByEmail(user.getEmail());
+        currentRecord.setRecentActivity("ACTIVE SUCCESSFUL AT " + Instant.now().toString());
+        currentRecord.setStatus(ACTIVE);
+        currentRecord.setDeletedAt(Instant.now().toString());
+        userRepository.update(currentRecord);
+        userEventPublisher.publish(userActiveRoutingKey, currentRecord);
+        logger.info("active user: {}", currentRecord);
+        return currentRecord;
     }
 
     public User inactive(User user) {
-        user.setRecentActivity("INACTIVE SUCCESSFUL AT " + Instant.now().toString());
-        user.setStatus("INACTIVE");
-        user.setDeletedAt(Instant.now().toString());
-        userRepository.save(user);
-        userEventPublisher.publish(userInactiveRoutingKey, user);
-        logger.info("inactive user: {}", user);
-        return user;
+        User currentRecord = userRepository.findByEmail(user.getEmail());
+        currentRecord.setRecentActivity("INACTIVE SUCCESSFUL AT " + Instant.now().toString());
+        currentRecord.setStatus(INACTIVE);
+        currentRecord.setDeletedAt(Instant.now().toString());
+        userRepository.update(currentRecord);
+        userEventPublisher.publish(userInactiveRoutingKey, currentRecord);
+        logger.info("inactive user: {}", currentRecord);
+        return currentRecord;
+    }
+
+    public User blocked(User user) {
+        User currentRecord = userRepository.findByEmail(user.getEmail());
+        currentRecord.setRecentActivity("BLOCKED SUCCESSFUL AT " + Instant.now().toString());
+        currentRecord.setStatus(BLOCKED);
+        currentRecord.setDeletedAt(Instant.now().toString());
+        userRepository.update(currentRecord);
+        userEventPublisher.publish(userBlockedRoutingKey, currentRecord);
+        logger.info("inactive user: {}", currentRecord);
+        return currentRecord;
     }
 
     public Me me(User user) {
-        User byUsernameIgnoreCase = userRepository.findByUsernameIgnoreCase(user.getUsername());
-        Human human = humanService.findByIdentification(byUsernameIgnoreCase.getHumanId());
-//        Deposits deposits = depositsService.findByIdentification(byUsernameIgnoreCase.getHumanId());
+        User currentRecord = userRepository.findByEmail(user.getEmail());
+        Human human = humanService.findById(user.getHumanId());
+//        Deposits deposits = depositsService.findByIdentification(currentRecord.getHumanId());
         userEventPublisher.publish(userMeRoutingKey, user);
-        logger.info("me user: {}", user);
+        logger.info("me user: {}", currentRecord);
         return Me.builder()
                 .human(human)
-                .user(byUsernameIgnoreCase)
+                .user(currentRecord)
                 .build();
     }
 }

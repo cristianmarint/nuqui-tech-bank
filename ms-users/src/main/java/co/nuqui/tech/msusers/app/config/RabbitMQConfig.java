@@ -22,7 +22,7 @@ public class RabbitMQConfig {
     @Value("${spring.rabbitmq.password}")
     private String RABBITMQ_PASSWORD;
 
-    @Bean("connectionFactoryPublisher")
+    @Bean("rabbitMQConnectionFactoryPublisher")
     public ConnectionFactory connectionFactory() {
         CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
         connectionFactory.setHost(RABBITMQ_HOST);

@@ -50,6 +50,12 @@ public class UserController {
     }
 
     @ExceptionHandler(GlobalException.class)
+    @PutMapping("blocked")
+    public ResponseEntity<User> blocked(@RequestBody User user) {
+        return ResponseEntity.status(OK).body(userService.blocked(user));
+    }
+
+    @ExceptionHandler(GlobalException.class)
     @PostMapping("me")
     public ResponseEntity<Me> me(@RequestBody User user) {
         return ResponseEntity.status(OK).body(userService.me(user));
