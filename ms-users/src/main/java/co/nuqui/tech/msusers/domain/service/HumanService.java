@@ -13,7 +13,7 @@ public class HumanService {
     public Human findByIdentification(Long humanId) {
         Human byIdentification = humanRestClient.findByIdentification(humanId);
         byIdentification.setPassword(null);
-        byIdentification.setPassword(null);
+        byIdentification.setUsername(null);
         return byIdentification;
     }
 }

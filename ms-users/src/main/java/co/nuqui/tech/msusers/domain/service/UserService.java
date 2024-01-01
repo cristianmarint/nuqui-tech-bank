@@ -49,6 +49,12 @@ public class UserService {
     @Value("${spring.rabbitmq.user.deleted.routing-key}")
     private String userDeletedRoutingKey;
 
+    @Value("${spring.rabbitmq.user.inactive.routing-key}")
+    private String userInactiveRoutingKey;
+
+    @Value("${spring.rabbitmq.user.active.routing-key}")
+    private String userActiveRoutingKey;
+
     @Value("${spring.rabbitmq.user.me.routing-key}")
     private String userMeRoutingKey;
 
@@ -65,7 +71,8 @@ public class UserService {
 
         if (userRepository.findByEmailIgnoreCase(user.getEmail()) == null &&
                 userRepository.findByUsernameIgnoreCase(user.getUsername()) == null) {
-            user.setStatus("CREATED SUCCESSFUL AT " + Instant.now().toString());
+            user.setRecentActivity("CREATED SUCCESSFUL AT " + Instant.now().toString());
+            user.setStatus("ACTIVE");
             userRepository.save(user);
             userEventPublisher.publish(userCreatedRoutingKey, user);
             logger.info("created user for human: {}", human);
@@ -77,7 +84,7 @@ public class UserService {
 
     public User login(User user) {
         user.setToken(jwtProvider.generateToken(user));
-        user.setStatus("LOGIN SUCCESSFUL AT " + Instant.now().toString());
+        user.setRecentActivity("LOGIN SUCCESSFUL AT " + Instant.now().toString());
         userRepository.save(user);
         logger.info("login user: {}", user);
         userEventPublisher.publish(userLoginRoutingKey, user);
@@ -85,7 +92,7 @@ public class UserService {
     }
 
     public User logout(User user) {
-        user.setStatus("LOGOUT SUCCESSFUL AT " + Instant.now().toString());
+        user.setRecentActivity("LOGOUT SUCCESSFUL AT " + Instant.now().toString());
         user.setToken(null);
         userRepository.save(user);
         userEventPublisher.publish(userLogoutRoutingKey, user);
@@ -94,11 +101,32 @@ public class UserService {
     }
 
     public User delete(User user) {
-        user.setStatus("DELETED SUCCESSFUL AT " + Instant.now().toString());
+        user.setRecentActivity("DELETED SUCCESSFUL AT " + Instant.now().toString());
+        user.setStatus("DELETED");
         user.setDeletedAt(Instant.now().toString());
         userRepository.save(user);
         userEventPublisher.publish(userDeletedRoutingKey, user);
         logger.info("deleted user: {}", user);
+        return user;
+    }
+
+    public User active(User user) {
+        user.setRecentActivity("ACTIVE SUCCESSFUL AT " + Instant.now().toString());
+        user.setStatus("ACTIVE");
+        user.setDeletedAt(Instant.now().toString());
+        userRepository.save(user);
+        userEventPublisher.publish(userActiveRoutingKey, user);
+        logger.info("active user: {}", user);
+        return user;
+    }
+
+    public User inactive(User user) {
+        user.setRecentActivity("INACTIVE SUCCESSFUL AT " + Instant.now().toString());
+        user.setStatus("INACTIVE");
+        user.setDeletedAt(Instant.now().toString());
+        userRepository.save(user);
+        userEventPublisher.publish(userInactiveRoutingKey, user);
+        logger.info("inactive user: {}", user);
         return user;
     }
 

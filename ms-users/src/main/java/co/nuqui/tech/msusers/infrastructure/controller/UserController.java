@@ -38,6 +38,18 @@ public class UserController {
     }
 
     @ExceptionHandler(GlobalException.class)
+    @PutMapping("active")
+    public ResponseEntity<User> active(@RequestBody User user) {
+        return ResponseEntity.status(OK).body(userService.active(user));
+    }
+
+    @ExceptionHandler(GlobalException.class)
+    @PutMapping("inactive")
+    public ResponseEntity<User> inactive(@RequestBody User user) {
+        return ResponseEntity.status(OK).body(userService.inactive(user));
+    }
+
+    @ExceptionHandler(GlobalException.class)
     @PostMapping("me")
     public ResponseEntity<Me> me(@RequestBody User user) {
         return ResponseEntity.status(OK).body(userService.me(user));

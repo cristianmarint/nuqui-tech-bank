@@ -45,6 +45,10 @@ public class User {
     @NotNull
     private String status;
 
+    @DynamoDBAttribute(attributeName = "recentActivity")
+    @NotNull
+    private String recentActivity;
+
     @DynamoDBAttribute(attributeName = "deletedAt")
     @NotNull
     private String deletedAt;

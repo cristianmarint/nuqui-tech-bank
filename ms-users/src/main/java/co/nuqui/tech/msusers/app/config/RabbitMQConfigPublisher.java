@@ -38,6 +38,12 @@ public class RabbitMQConfigPublisher {
     @Value("${spring.rabbitmq.user.deleted.routing-key}")
     private String userDeletedRoutingKey;
 
+    @Value("${spring.rabbitmq.user.inactive.routing-key}")
+    private String userInactiveRoutingKey;
+
+    @Value("${spring.rabbitmq.user.active.routing-key}")
+    private String userActiveRoutingKey;
+
     @Value("${spring.rabbitmq.user.me.routing-key}")
     private String userMeRoutingKey;
 
@@ -60,6 +66,20 @@ public class RabbitMQConfigPublisher {
             @Autowired Queue userQueue,
             @Autowired Exchange userExchange) {
         return BindingBuilder.bind(userQueue).to(userExchange).with(userDeletedRoutingKey).noargs();
+    }
+
+    @Bean
+    public Binding bindingUserActiveQueueToExchange(
+            @Autowired Queue userQueue,
+            @Autowired Exchange userExchange) {
+        return BindingBuilder.bind(userQueue).to(userExchange).with(userActiveRoutingKey).noargs();
+    }
+
+    @Bean
+    public Binding bindingUserInactiveQueueToExchange(
+            @Autowired Queue userQueue,
+            @Autowired Exchange userExchange) {
+        return BindingBuilder.bind(userQueue).to(userExchange).with(userInactiveRoutingKey).noargs();
     }
 
     @Bean
