@@ -1,6 +1,8 @@
 package co.nuqui.tech.msusers.domain.service;
 
 import co.nuqui.tech.msusers.domain.dto.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,20 +14,20 @@ public class UserEventPublisher {
     @Autowired
     private final RabbitTemplate rabbitTemplate;
 
+    private static final Logger logger = LoggerFactory.getLogger(UserEventPublisher.class);
+
     @Value("${spring.rabbitmq.user.exchange}")
     private String userExchange;
 
     @Value("${spring.rabbitmq.user.default-receive-queue}")
     private String userQueue;
 
-    @Value("${spring.rabbitmq.user.routing-key}")
-    private String userRoutingKey;
-
     public UserEventPublisher(RabbitTemplate rabbitTemplate) {
         this.rabbitTemplate = rabbitTemplate;
     }
 
-    public void publish(User user) {
-        rabbitTemplate.convertAndSend(userExchange, userRoutingKey, user);
+    public void publish(String routingKey, User user) {
+        logger.info("publish event routingKey: {}, user: {}", routingKey, user);
+        rabbitTemplate.convertAndSend(userExchange, routingKey, user);
     }
 }

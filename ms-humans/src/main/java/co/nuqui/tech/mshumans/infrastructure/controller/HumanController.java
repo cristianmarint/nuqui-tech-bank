@@ -3,6 +3,7 @@ package co.nuqui.tech.mshumans.infrastructure.controller;
 import co.nuqui.tech.mshumans.domain.dto.Human;
 import co.nuqui.tech.mshumans.domain.service.HumanService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,8 +23,11 @@ public class HumanController {
     }
 
     @ExceptionHandler(GlobalException.class)
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, value = "/search/{identification}")
-    public ResponseEntity<Human> searchByIdentification(@PathVariable String identification) {
-        return ResponseEntity.ok().body(humanService.findByIdentification(identification));
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, value = "/search/")
+    public ResponseEntity<Human> searchByIdentification(
+            @Param("identification") String identification,
+            @Param("id") Long id
+    ) {
+        return ResponseEntity.ok().body(humanService.findByIdentificationOrId(identification,id));
     }
 }

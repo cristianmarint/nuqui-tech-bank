@@ -34,5 +34,15 @@
       "name": "dynamodb.table-name",
       "type": "java.lang.String",
       "description": "Description for dynamodb.table-name."
+    },
+    {
+      "name": "spring.rabbitmq.user..login.routing-key",
+      "type": "java.lang.String",
+      "description": "Description for spring.rabbitmq.user..login.routing-key."
+    },
+    {
+      "name": "spring.rabbitmq.user.login.routing-key",
+      "type": "java.lang.String",
+      "description": "Description for spring.rabbitmq.user.login.routing-key."
     }
   ] }

@@ -1,6 +1,9 @@
 package co.nuqui.tech.msusers.app.config;
 
-import org.springframework.amqp.core.*;
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.DirectExchange;
+import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory;
@@ -19,7 +22,7 @@ public class RabbitMQConfigListener {
     @Value("${spring.rabbitmq.user.default-receive-queue}")
     private String humanQueue;
 
-    @Value("${spring.rabbitmq.user.routing-key}")
+    @Value("${spring.rabbitmq.user.created.routing-key}")
     private String humanRoutingKey;
 
     public static final String DLE = "human.exchange.dle";
@@ -43,8 +46,8 @@ public class RabbitMQConfigListener {
     }
 
     @Bean
-    TopicExchange humanExchange() {
-        return new TopicExchange(humanExchange);
+    DirectExchange humanExchange() {
+        return new DirectExchange(humanExchange);
     }
 
     @Bean
@@ -54,22 +57,7 @@ public class RabbitMQConfigListener {
 
     @Bean
     Queue humanQueue() {
-        return QueueBuilder.durable(humanQueue)
-                .withArgument(
-                        "x-dead-letter-exchange",
-                        DLE
-                )
-                .withArgument(
-                        "x-dead-letter-routing-key",
-                        ROUTING_KEY_DLQ
-                )
-                .build();
-    }
-
-    @Bean
-    Queue humanDeadLetterQueue() {
-        return QueueBuilder.durable(DLQ)
-                .build();
+        return new Queue(humanQueue);
     }
 
     @Bean
@@ -78,13 +66,5 @@ public class RabbitMQConfigListener {
                 .bind(humanQueue())
                 .to(humanExchange())
                 .with(humanRoutingKey);
-    }
-
-    @Bean
-    Binding bindingDLQUsers() {
-        return BindingBuilder
-                .bind(humanDeadLetterQueue())
-                .to(humanDeadLetterExchange())
-                .with(ROUTING_KEY_DLQ);
     }
 }

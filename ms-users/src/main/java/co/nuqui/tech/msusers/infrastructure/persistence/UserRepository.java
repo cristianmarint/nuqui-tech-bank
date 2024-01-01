@@ -52,7 +52,6 @@ public class UserRepository {
 
     public User save(User user) {
         dynamoDBMapper.save(user);
-        user.setStatus("SAVED");
         return user;
     }
 

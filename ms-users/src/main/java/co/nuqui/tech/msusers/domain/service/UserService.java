@@ -7,8 +7,11 @@ import co.nuqui.tech.msusers.infrastructure.controller.GlobalException;
 import co.nuqui.tech.msusers.infrastructure.persistence.UserRepository;
 import co.nuqui.tech.msusers.infrastructure.security.JwtProvider;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.NoArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,17 +20,40 @@ import java.time.Instant;
 
 @Service
 @AllArgsConstructor
+@NoArgsConstructor
 @Transactional
-@Slf4j
 public class UserService {
+
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+
+
+    @Value("${spring.rabbitmq.user.created.routing-key}")
+    private String userCreatedRoutingKey;
+
     @Autowired
-    private final UserRepository userRepository;
+    private UserRepository userRepository;
+
     @Autowired
-    private final HumanService humanService;
+    private HumanService humanService;
+
     @Autowired
     private UserEventPublisher userEventPublisher;
 
-    private final JwtProvider jwtProvider;
+
+    @Value("${spring.rabbitmq.user.login.routing-key}")
+    private String userLoginRoutingKey;
+
+    @Value("${spring.rabbitmq.user.logout.routing-key}")
+    private String userLogoutRoutingKey;
+
+    @Value("${spring.rabbitmq.user.deleted.routing-key}")
+    private String userDeletedRoutingKey;
+
+    @Value("${spring.rabbitmq.user.me.routing-key}")
+    private String userMeRoutingKey;
+
+    @Autowired
+    private JwtProvider jwtProvider;
 
     public void create(Human human) {
         User user = User.builder()
@@ -39,8 +65,10 @@ public class UserService {
 
         if (userRepository.findByEmailIgnoreCase(user.getEmail()) == null &&
                 userRepository.findByUsernameIgnoreCase(user.getUsername()) == null) {
+            user.setStatus("CREATED SUCCESSFUL AT " + Instant.now().toString());
             userRepository.save(user);
-            userEventPublisher.publish(user);
+            userEventPublisher.publish(userCreatedRoutingKey, user);
+            logger.info("created user for human: {}", human);
             return;
         }
         throw new GlobalException("user already exists " + user.getEmail());
@@ -48,30 +76,38 @@ public class UserService {
 
 
     public User login(User user) {
-        String token = jwtProvider.generateToken(user);
-        user.setToken(token);
-        user.setStatus("LOGIN SUCCESSFUL");
+        user.setToken(jwtProvider.generateToken(user));
+        user.setStatus("LOGIN SUCCESSFUL AT " + Instant.now().toString());
         userRepository.save(user);
+        logger.info("login user: {}", user);
+        userEventPublisher.publish(userLoginRoutingKey, user);
         return user;
     }
 
     public User logout(User user) {
-        user.setStatus("LOGOUT SUCCESSFUL");
+        user.setStatus("LOGOUT SUCCESSFUL AT " + Instant.now().toString());
         user.setToken(null);
         userRepository.save(user);
+        userEventPublisher.publish(userLogoutRoutingKey, user);
+        logger.info("logout user: {}", user);
         return user;
     }
 
     public User delete(User user) {
-        user.setStatus("DELETED SUCCESSFUL");
+        user.setStatus("DELETED SUCCESSFUL AT " + Instant.now().toString());
         user.setDeletedAt(Instant.now().toString());
         userRepository.save(user);
+        userEventPublisher.publish(userDeletedRoutingKey, user);
+        logger.info("deleted user: {}", user);
         return user;
     }
 
     public Me me(User user) {
         User byUsernameIgnoreCase = userRepository.findByUsernameIgnoreCase(user.getUsername());
         Human human = humanService.findByIdentification(byUsernameIgnoreCase.getHumanId());
+//        Deposits deposits = depositsService.findByIdentification(byUsernameIgnoreCase.getHumanId());
+        userEventPublisher.publish(userMeRoutingKey, user);
+        logger.info("me user: {}", user);
         return Me.builder()
                 .human(human)
                 .user(byUsernameIgnoreCase)

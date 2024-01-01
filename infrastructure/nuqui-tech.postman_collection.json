@@ -1,0 +1,323 @@
+{
+	"info": {
+		"_postman_id": "90ac8b85-cf2e-4752-9617-96d91521eb70",
+		"name": "nuqui-tech",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "17378423"
+	},
+	"item": [
+		{
+			"name": "ms-humans",
+			"item": [
+				{
+					"name": "save",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse the JSON response\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"// Extract the 'identification' value\r",
+									"var identificationValue = jsonData.identification;\r",
+									"\r",
+									"// Store the 'identification' value in a collection variable\r",
+									"pm.collectionVariables.set('human.identification', identificationValue);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"{{$randomFirstName}}\",\r\n    \"lastname\": \"{{$randomLastName}}\",\r\n    \"identification\": \"750\",\r\n    \"email\":\"celestine96@hotmail.com\",\r\n    \"username\":\"username\",\r\n    \"password\":\"password\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8081/api/v1/humans/save",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"humans",
+								"save"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "searchByIdentification",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8081/api/v1/humans/search/?id=7",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"humans",
+								"search",
+								""
+							],
+							"query": [
+								{
+									"key": "identification",
+									"value": "750",
+									"disabled": true
+								},
+								{
+									"key": "id",
+									"value": "7"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "ms-users",
+			"item": [
+				{
+					"name": "login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse the JSON response\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"// Extract the 'identification' value\r",
+									"var identificationValue = jsonData.identification;\r",
+									"\r",
+									"// Store the 'identification' value in a collection variable\r",
+									"pm.collectionVariables.set('human.identification', identificationValue);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": \"9797c68a-b354-4dd9-94df-85a468f8c10d\",\r\n    \"humanId\": 2,\r\n    // \"token\": null,\r\n    \"email\": \"dayana21@gmail.com\",\r\n    \"username\": \"username\",\r\n    \"password\": \"password\"\r\n    // ,\r\n    // \"status\": \"SAVED\",\r\n    // \"deletedAt\": null\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8082/api/v1/users/login",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logout",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse the JSON response\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"// Extract the 'identification' value\r",
+									"var identificationValue = jsonData.identification;\r",
+									"\r",
+									"// Store the 'identification' value in a collection variable\r",
+									"pm.collectionVariables.set('human.identification', identificationValue);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": \"9797c68a-b354-4dd9-94df-85a468f8c10d\",\r\n    \"humanId\": 2,\r\n    // \"token\": null,\r\n    \"email\": \"dayana21@gmail.com\",\r\n    \"username\": \"username\",\r\n    \"password\": \"password\"\r\n    // ,\r\n    // \"status\": \"SAVED\",\r\n    // \"deletedAt\": null\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8082/api/v1/users/logout",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse the JSON response\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"// Extract the 'identification' value\r",
+									"var identificationValue = jsonData.identification;\r",
+									"\r",
+									"// Store the 'identification' value in a collection variable\r",
+									"pm.collectionVariables.set('human.identification', identificationValue);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": \"9797c68a-b354-4dd9-94df-85a468f8c10d\",\r\n    \"humanId\": 2,\r\n    // \"token\": null,\r\n    \"email\": \"dayana21@gmail.com\",\r\n    \"username\": \"username\",\r\n    \"password\": \"password\"\r\n    // ,\r\n    // \"status\": \"SAVED\",\r\n    // \"deletedAt\": null\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8082/api/v1/users/delete",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"delete"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "me",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse the JSON response\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"// Extract the 'identification' value\r",
+									"var identificationValue = jsonData.identification;\r",
+									"\r",
+									"// Store the 'identification' value in a collection variable\r",
+									"pm.collectionVariables.set('human.identification', identificationValue);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": \"9797c68a-b354-4dd9-94df-85a468f8c10d\",\r\n    \"humanId\": 7,\r\n    // \"token\": null,\r\n    \"email\": \"dayana21@gmail.com\",\r\n    \"username\": \"username\",\r\n    \"password\": \"password\"\r\n    // ,\r\n    // \"status\": \"SAVED\",\r\n    // \"deletedAt\": null\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8082/api/v1/users/me",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"me"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "identification",
+			"value": ""
+		},
+		{
+			"key": "human.identification",
+			"value": ""
+		}
+	]
+}
