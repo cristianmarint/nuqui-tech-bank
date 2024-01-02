@@ -3,6 +3,7 @@ package co.nuqui.tech.mshumans.infrastructure.controller;
 import co.nuqui.tech.mshumans.domain.dto.Human;
 import co.nuqui.tech.mshumans.domain.service.HumanService;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

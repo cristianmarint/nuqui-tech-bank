@@ -1,8 +1,9 @@
 version: '3'
 
 services:
-  postgres:
+  nuqui_postgres_humans:
     image: postgres:latest
+    container_name: nuqui_postgres_humans
     environment:
       POSTGRES_DB: nuqui
       POSTGRES_USER: appuser
@@ -10,30 +11,64 @@ services:
     ports:
       - "5432:5432"
 
-  dynamodb:
+  nuqui_postgres_deposits:
+    image: postgres:latest
+    container_name: nuqui_postgres_deposits
+    environment:
+      POSTGRES_DB: nuqui_deposits
+      POSTGRES_USER: another_appuser
+      POSTGRES_PASSWORD: another_appuser_password
+    ports:
+      - "5433:5432"
+
+  nuqui_dynamodb_users:
     image: "amazon/dynamodb-local:latest"
-    container_name: dynamodb
+    container_name: nuqui_dynamodb_users
     ports:
       - "8000:8000"
-    # volumes:
-    #  - "./docker/dynamodb:/home/dynamodblocal/data"
-    #   working_dir: /home/dynamodblocal
-    #   command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
     environment:
       - AWS_ACCESS_KEY_ID="your1access2key3id"
       - AWS_SECRET_ACCESS_KEY="your1secret2key"
       - AWS_DEFAULT_REGION=us-east-1
 
-  mongodb:
+  nuqui_mongodb_users:
     image: mongo:latest
+    container_name: nuqui_mongodb
     ports:
       - "27017:27017"
 
-  rabbitmq:
+  nuqui_rabbitmq:
     image: rabbitmq:3.8-management
+    container_name: nuqui_rabbitmq
     environment:
       RABBITMQ_DEFAULT_USER: appuser
       RABBITMQ_DEFAULT_PASS: appuser_password
     ports:
       - "5672:5672"
       - "15672:15672"
+
+
+  nuqui_zookeeper:
+    image: wurstmeister/zookeeper
+    container_name: nuqui_zookeeper
+    ports:
+      - "2181:2181"
+    networks:
+      - kafka-net
+  nuqui_kafka:
+    image: wurstmeister/kafka
+    container_name: nuqui_kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: INSIDE://kafka:9092,OUTSIDE://localhost:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+      KAFKA_LISTENERS: INSIDE://0.0.0.0:9092,OUTSIDE://0.0.0.0:9093
+      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_CREATE_TOPICS: "nuqui_deposits_topic"
+    networks:
+      - kafka-net
+networks:
+  kafka-net:
+    driver: bridge
