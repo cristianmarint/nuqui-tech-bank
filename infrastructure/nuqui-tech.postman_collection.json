@@ -34,7 +34,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"{{$randomFirstName}}\",\r\n    \"lastname\": \"{{$randomLastName}}\",\r\n    \"identification\": \"750\",\r\n    \"email\":\"celestine96@hotmail.com\",\r\n    \"username\":\"username\",\r\n    \"password\":\"password\"\r\n}",
+							"raw": "{\r\n    \"name\": \"{{$randomFirstName}}\",\r\n    \"lastname\": \"{{$randomLastName}}\",\r\n    \"identification\": \"753\",\r\n    \"email\":\"753@hotmail.com\",\r\n    \"username\":\"753\",\r\n    \"password\":\"password\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -58,7 +58,7 @@
 					"response": []
 				},
 				{
-					"name": "searchByIdentification",
+					"name": "findByIdentificationOrId",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -120,7 +120,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"id\": \"9797c68a-b354-4dd9-94df-85a468f8c10d\",\r\n    \"humanId\": 2,\r\n    // \"token\": null,\r\n    \"email\": \"dayana21@gmail.com\",\r\n    \"username\": \"username\",\r\n    \"password\": \"password\"\r\n    // ,\r\n    // \"status\": \"SAVED\",\r\n    // \"deletedAt\": null\r\n}",
+							"raw": "{\r\n    \"id\": \"12ebc8ee-ff66-4455-ad3b-6a7c7413ac90\",\r\n    \"humanId\": 7,\r\n    \"email\": \"celestine96@hotmail.com\",\r\n    \"username\": \"username\",\r\n    \"password\": \"password7\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -168,7 +168,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"id\": \"9797c68a-b354-4dd9-94df-85a468f8c10d\",\r\n    \"humanId\": 2,\r\n    // \"token\": null,\r\n    \"email\": \"dayana21@gmail.com\",\r\n    \"username\": \"username\",\r\n    \"password\": \"password\"\r\n    // ,\r\n    // \"status\": \"SAVED\",\r\n    // \"deletedAt\": null\r\n}",
+							"raw": "{\r\n    \"id\": \"12ebc8ee-ff66-4455-ad3b-6a7c7413ac90\",\r\n    \"humanId\": 7,\r\n    \"email\": \"celestine96@hotmail.com\",\r\n    \"username\": \"username\",\r\n    \"password\": \"password\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -216,7 +216,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"id\": \"9797c68a-b354-4dd9-94df-85a468f8c10d\",\r\n    \"humanId\": 2,\r\n    // \"token\": null,\r\n    \"email\": \"dayana21@gmail.com\",\r\n    \"username\": \"username\",\r\n    \"password\": \"password\"\r\n    // ,\r\n    // \"status\": \"SAVED\",\r\n    // \"deletedAt\": null\r\n}",
+							"raw": "{\r\n    \"id\": \"12ebc8ee-ff66-4455-ad3b-6a7c7413ac90\",\r\n    \"humanId\": 7,\r\n    \"email\": \"celestine96@hotmail.com\",\r\n    \"username\": \"username\",\r\n    \"password\": \"password\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -234,6 +234,150 @@
 								"v1",
 								"users",
 								"delete"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "active",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse the JSON response\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"// Extract the 'identification' value\r",
+									"var identificationValue = jsonData.identification;\r",
+									"\r",
+									"// Store the 'identification' value in a collection variable\r",
+									"pm.collectionVariables.set('human.identification', identificationValue);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": \"12ebc8ee-ff66-4455-ad3b-6a7c7413ac90\",\r\n    \"humanId\": 7,\r\n    \"email\": \"celestine96@hotmail.com\",\r\n    \"username\": \"username\",\r\n    \"password\": \"password\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8082/api/v1/users/active",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"active"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "inactive",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse the JSON response\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"// Extract the 'identification' value\r",
+									"var identificationValue = jsonData.identification;\r",
+									"\r",
+									"// Store the 'identification' value in a collection variable\r",
+									"pm.collectionVariables.set('human.identification', identificationValue);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": \"12ebc8ee-ff66-4455-ad3b-6a7c7413ac90\",\r\n    \"humanId\": 7,\r\n    \"email\": \"celestine96@hotmail.com\",\r\n    \"username\": \"username\",\r\n    \"password\": \"password\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8082/api/v1/users/inactive",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"inactive"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "blocked",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse the JSON response\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"// Extract the 'identification' value\r",
+									"var identificationValue = jsonData.identification;\r",
+									"\r",
+									"// Store the 'identification' value in a collection variable\r",
+									"pm.collectionVariables.set('human.identification', identificationValue);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": \"12ebc8ee-ff66-4455-ad3b-6a7c7413ac90\",\r\n    \"humanId\": 7,\r\n    \"email\": \"celestine96@hotmail.com\",\r\n    \"username\": \"username\",\r\n    \"password\": \"password\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8082/api/v1/users/blocked",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"blocked"
 							]
 						}
 					},
@@ -264,7 +408,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"id\": \"9797c68a-b354-4dd9-94df-85a468f8c10d\",\r\n    \"humanId\": 7,\r\n    // \"token\": null,\r\n    \"email\": \"dayana21@gmail.com\",\r\n    \"username\": \"username\",\r\n    \"password\": \"password\"\r\n    // ,\r\n    // \"status\": \"SAVED\",\r\n    // \"deletedAt\": null\r\n}",
+							"raw": "{\r\n    \"id\": \"12ebc8ee-ff66-4455-ad3b-6a7c7413ac97\",\r\n    \"humanId\": 7,\r\n    \"email\": \"celestine96@hotmail.com\",\r\n    \"username\": \"username\",\r\n    \"password\": \"password7\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -282,6 +426,141 @@
 								"v1",
 								"users",
 								"me"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "ms-deposits",
+			"item": [
+				{
+					"name": "save",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    // \"id\": \"c4a8d771-3f22-4d46-bb17-6a1f84a5e72a\",\r\n    \"accountNumber\": \"123456456\",\r\n    \"humanId\": 1,\r\n    \"userId\": \"7\",\r\n    \"name\": \"John Doe\",\r\n    \"balance\": \"1000.50\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8083/api/v1/deposits/save",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"api",
+								"v1",
+								"deposits",
+								"save"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "transfer",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"depositIdFrom\": \"a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a10\",\r\n    \"depositIdTo\": \"a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11\",\r\n    \"amount\": 10.00\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8083/api/v1/deposits/transfer",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"api",
+								"v1",
+								"deposits",
+								"transfer"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "transactions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8083/api/v1/deposits/transactions?account-from-id=a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a10&page=1&size=10",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"api",
+								"v1",
+								"deposits",
+								"transactions"
+							],
+							"query": [
+								{
+									"key": "account-from-id",
+									"value": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a10"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "findByHumanIdOrUserId",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8083/api/v1/deposits/search/?humanId=7",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8083",
+							"path": [
+								"api",
+								"v1",
+								"deposits",
+								"search",
+								""
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "12ebc8ee-ff66-4455-ad3b-6a7c7413ac97",
+									"disabled": true
+								},
+								{
+									"key": "humanId",
+									"value": "7"
+								}
 							]
 						}
 					},
