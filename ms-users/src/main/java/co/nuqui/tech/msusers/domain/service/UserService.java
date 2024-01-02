@@ -40,6 +40,9 @@ public class UserService {
     private HumanService humanService;
 
     @Autowired
+    private DepositService depositService;
+
+    @Autowired
     private UserEventPublisher userEventPublisher;
 
 
@@ -166,13 +169,15 @@ public class UserService {
 
     public Me me(User user) {
         User currentRecord = userRepository.findByEmail(user.getEmail());
-        Human human = humanService.findById(user.getHumanId());
-//        Deposits deposits = depositsService.findByIdentification(currentRecord.getHumanId());
-        userEventPublisher.publish(userMeRoutingKey, user);
-        logger.info("me user: {}", currentRecord);
-        return Me.builder()
-                .human(human)
+        logger.info("user user: {}", currentRecord);
+
+        Me me = Me.builder()
+                .human(humanService.findById(currentRecord.getHumanId()))
                 .user(currentRecord)
+                .deposits(depositService.findByHumanId(currentRecord.getHumanId()))
                 .build();
+        logger.info("me user: {}", me);
+        userEventPublisher.publish(userMeRoutingKey, currentRecord);
+        return me;
     }
 }

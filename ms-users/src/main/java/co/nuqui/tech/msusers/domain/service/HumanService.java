@@ -11,9 +11,9 @@ public class HumanService {
     private HumanRestClient humanRestClient;
 
     public Human findById(Long humanId) {
-        Human byIdentification = humanRestClient.findById(humanId);
-        byIdentification.setPassword(null);
-        byIdentification.setUsername(null);
-        return byIdentification;
+        Human byId = humanRestClient.findById(humanId);
+        byId.setPassword(null);
+        byId.setUsername(null);
+        return byId;
     }
 }

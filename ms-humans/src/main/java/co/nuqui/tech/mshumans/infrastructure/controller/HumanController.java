@@ -25,7 +25,7 @@ public class HumanController {
 
     @ExceptionHandler(GlobalException.class)
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, value = "/search/")
-    public ResponseEntity<Human> searchByIdentification(
+    public ResponseEntity<Human> findByIdentificationOrId(
             @Param("identification") String identification,
             @Param("id") Long id
     ) {

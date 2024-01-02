@@ -1,4 +1,4 @@
-package co.nuqui.tech.msusers.app.config;
+package co.nuqui.tech.msdeposits.app.config;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
@@ -25,7 +25,6 @@ public class RabbitMQConfigListener {
     @Value("${spring.rabbitmq.user.created.routing-key}")
     private String humanRoutingKey;
 
-
     @Bean
     public Jackson2JsonMessageConverter messageConverter() {
         return new Jackson2JsonMessageConverter();
@@ -45,8 +44,6 @@ public class RabbitMQConfigListener {
     DirectExchange humanExchange() {
         return new DirectExchange(humanExchange);
     }
-
-
     @Bean
     Queue humanQueue() {
         return new Queue(humanQueue);
