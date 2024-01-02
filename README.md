@@ -1,4 +1,4 @@
-# Microservices with Spring Boot and Spring Reactor 🚀
+# Nuqui Tech wannabe bank 🏦 - Microservices with Spring Boot and Spring Reactor 🚀
 ## Overview
 This repository contains a POC for set of microservices for a "_bank_" developed using Spring Boot and Spring Reactor, Spring Batch, providing a scalable and reactive architecture for modern applications.
 
