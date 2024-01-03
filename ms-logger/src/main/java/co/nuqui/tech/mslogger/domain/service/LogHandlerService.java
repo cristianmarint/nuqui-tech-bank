@@ -39,7 +39,7 @@ public class LogHandlerService {
 
     @RabbitListener(bindings = @QueueBinding(
             value = @Queue(value = "user.queue", durable = "true"),
-            exchange = @Exchange(value = "exchange.name", type = ExchangeTypes.TOPIC),
+            exchange = @Exchange(value = "user.exchange", type = ExchangeTypes.DIRECT),
             key = {"user.created", "user.login", "user.logout",
                     "user.deleted", "user.blocked","user.inactive"
             })
@@ -60,7 +60,7 @@ public class LogHandlerService {
 
     @RabbitListener(bindings = @QueueBinding(
             value = @Queue(value = "user.queue", durable = "true"),
-            exchange = @Exchange(value = "exchange.name", type = ExchangeTypes.TOPIC),
+            exchange = @Exchange(value = "user.exchange", type = ExchangeTypes.DIRECT),
             key = {"user.me"})
     )
     public void rabbitMQListenerHuman(
@@ -79,7 +79,7 @@ public class LogHandlerService {
 
     @RabbitListener(bindings = @QueueBinding(
             value = @Queue(value = "human.queue", durable = "true"),
-            exchange = @Exchange(value = "exchange.name", type = ExchangeTypes.TOPIC),
+            exchange = @Exchange(value = "human.exchange", type = ExchangeTypes.DIRECT),
             key = {"human.created","human.search"})
     )
     public void rabbitMQListenerHuman(

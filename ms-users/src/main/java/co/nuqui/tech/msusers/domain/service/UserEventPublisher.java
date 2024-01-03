@@ -20,9 +20,6 @@ public class UserEventPublisher {
     @Value("${spring.rabbitmq.user.exchange}")
     private String userExchange;
 
-    @Value("${spring.rabbitmq.user.default-receive-queue}")
-    private String userQueue;
-
     public UserEventPublisher(RabbitTemplate rabbitTemplate) {
         this.rabbitTemplate = rabbitTemplate;
     }
