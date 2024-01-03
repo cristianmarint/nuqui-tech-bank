@@ -31,12 +31,6 @@ services:
       - AWS_SECRET_ACCESS_KEY="your1secret2key"
       - AWS_DEFAULT_REGION=us-east-1
 
-  nuqui_mongodb_users:
-    image: mongo:latest
-    container_name: nuqui_mongodb
-    ports:
-      - "27017:27017"
-
   nuqui_rabbitmq:
     image: rabbitmq:3.8-management
     container_name: nuqui_rabbitmq
@@ -80,3 +74,33 @@ services:
       KAFKA_CLUSTERS_0_NAME: local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
       KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+      MONGO_INITDB_DATABASE: nuquilogs
+    ports:
+      - "27017:27017"
+    networks:
+      - MONGO
+  mongo-express:
+    image: mongo-express:latest
+    container_name: mongo-express
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: admin
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_MONGODB_PORT: "27017"
+    ports:
+      - "8023:8081"
+    networks:
+      - MONGO
+    depends_on:
+      - mongo
+
+networks:
+  MONGO:
+    name: MONGO

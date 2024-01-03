@@ -177,7 +177,7 @@ public class UserService {
                 .deposits(depositService.findByHumanId(currentRecord.getHumanId()))
                 .build();
         logger.info("me user: {}", me);
-        userEventPublisher.publish(userMeRoutingKey, currentRecord);
+        userEventPublisher.publish(userMeRoutingKey, me);
         return me;
     }
 }

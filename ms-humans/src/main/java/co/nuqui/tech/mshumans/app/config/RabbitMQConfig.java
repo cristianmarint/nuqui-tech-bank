@@ -1,6 +1,5 @@
 package co.nuqui.tech.mshumans.app.config;
 
-import co.nuqui.tech.mshumans.domain.service.HumanEventPublisher;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -21,8 +20,11 @@ public class RabbitMQConfig {
     @Value("${spring.rabbitmq.human.default-receive-queue}")
     private String humanQueue;
 
-    @Value("${spring.rabbitmq.human.routing-key}")
-    private String humanRoutingKey;
+    @Value("${spring.rabbitmq.human.created.routing-key}")
+    private String humanCreatedRoutingKey;
+
+    @Value("${spring.rabbitmq.human.search.routing-key}")
+    private String humanSearchRoutingKey;
 
     @Value("${spring.rabbitmq.user.exchange}")
     private String userExchange;
@@ -66,17 +68,24 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public Binding bindingHumanQueueToExchange(
+    public Binding bindingHumanQueueToExchangeWithCreatedRoutingKey(
             @Autowired Queue humanQueue,
             @Autowired Exchange humanExchange) {
-        return BindingBuilder.bind(humanQueue).to(humanExchange).with(humanRoutingKey).noargs();
+        return BindingBuilder.bind(humanQueue).to(humanExchange).with(humanCreatedRoutingKey).noargs();
+    }
+
+    @Bean
+    public Binding bindingHumanQueueToExchangeWithSearchRoutingKey(
+            @Autowired Queue humanQueue,
+            @Autowired Exchange humanExchange) {
+        return BindingBuilder.bind(humanQueue).to(humanExchange).with(humanSearchRoutingKey).noargs();
     }
 
     @Bean
     public Binding bindingUserQueueToExchange(
             @Autowired Queue userQueue,
             @Autowired Exchange userExchange) {
-        return BindingBuilder.bind(userQueue).to(userExchange).with(humanRoutingKey).noargs();
+        return BindingBuilder.bind(userQueue).to(userExchange).with(userRoutingKey).noargs();
     }
 
     @Bean

@@ -1,5 +1,6 @@
 package co.nuqui.tech.msusers.domain.service;
 
+import co.nuqui.tech.msusers.domain.dto.Me;
 import co.nuqui.tech.msusers.domain.dto.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,5 +30,10 @@ public class UserEventPublisher {
     public void publish(String routingKey, User user) {
         logger.info("publish event routingKey: {}, user: {}", routingKey, user);
         rabbitTemplate.convertAndSend(userExchange, routingKey, user);
+    }
+
+    public void publish(String routingKey, Me me) {
+        logger.info("publish event routingKey: {}, me: {}", routingKey, me);
+        rabbitTemplate.convertAndSend(userExchange, routingKey, me);
     }
 }

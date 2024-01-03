@@ -139,13 +139,13 @@ public class DepositService {
                             .flatMap(this::updateNuquiBalance)
                             .then(Mono.just(transaction));
                 })
-                .doOnNext(transaction1 -> kafkaProducer.send(depositsTransfersTopic,transaction1))
                 .flatMap(this::updateTransactionToCompleted);
     }
 
     private Mono<? extends Transaction> updateTransactionToCompleted(Transaction transactionToUpdate) {
         transactionToUpdate.setStatus(TRANSACTION_STATUS_COMPLETED);
-        return transactionRepository.save(transactionToUpdate);
+        return transactionRepository.save(transactionToUpdate)
+                .doOnNext(send -> kafkaProducer.send(depositsTransfersTopic,send));
     }
 
     private Mono<? extends Deposit> updateNuquiBalance(Deposit nuquiTechDeposit) {
