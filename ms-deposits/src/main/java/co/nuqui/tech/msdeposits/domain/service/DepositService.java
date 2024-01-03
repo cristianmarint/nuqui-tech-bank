@@ -1,11 +1,12 @@
 package co.nuqui.tech.msdeposits.domain.service;
 
+import co.nuqui.tech.msdeposits.app.config.KafkaProducer;
 import co.nuqui.tech.msdeposits.domain.dto.Deposit;
 import co.nuqui.tech.msdeposits.domain.dto.Transaction;
 import co.nuqui.tech.msdeposits.domain.dto.User;
 import co.nuqui.tech.msdeposits.infrastructure.controller.GlobalException;
 import co.nuqui.tech.msdeposits.infrastructure.persistance.DepositRepostory;
-import co.nuqui.tech.msdeposits.infrastructure.persistance.TransactonRepository;
+import co.nuqui.tech.msdeposits.infrastructure.persistance.TransactionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,7 @@ public class DepositService {
     private DepositRepostory depositRepostory;
 
     @Autowired
-    private TransactonRepository transactonRepository;
+    private TransactionRepository transactionRepository;
 
     @Value("${nuqui.tech.transfer.fixed.fee}")
     private BigDecimal fixedFee;
@@ -41,12 +42,26 @@ public class DepositService {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private KafkaProducer kafkaProducer;
+
+    @Value("${nuqui.tech.kafka.deposits.search.topic}")
+    private String depositsSearchTopic;
+
+    @Value("${nuqui.tech.kafka.deposits.transactions.topic}")
+    private String depositsTransactionsTopic;
+
+    @Value("${nuqui.tech.kafka.deposits.transfer.topic}")
+    private String depositsTransfersTopic;
+
     public Mono<Deposit> save(Mono<Deposit> deposit) {
         return deposit.flatMap(depositRepostory::save);
     }
 
     public Flux<Transaction> findAllTransactionsByAccountFrom(UUID depositIdFrom, int limit, int offset) {
-        return transactonRepository.findAllTransactionsByDepositIdFrom(depositIdFrom, limit, offset);
+        return transactionRepository
+                .findAllTransactionsByDepositIdFrom(depositIdFrom, limit, offset)
+                .doOnNext(transaction -> kafkaProducer.send(depositsTransactionsTopic,transaction));
     }
 
     public Mono<Deposit> createDepositForHuman(User user) {
@@ -70,17 +85,21 @@ public class DepositService {
 
         if (humanId != null) {
             logger.info("find deposits by humanId: {}", humanId);
-            return depositRepostory.findByHumanId(humanId).collectList().block();
+            return depositRepostory.findByHumanId(humanId).collectList()
+                    .doOnNext(transaction -> kafkaProducer.send(depositsSearchTopic,transaction)).block();
         }
 
         logger.info("find deposits by userId: {}", userId);
-        return depositRepostory.findByUserId(userId).collectList().block();
+        return depositRepostory
+                .findByUserId(userId).collectList()
+                .doOnNext(transaction -> kafkaProducer.send(depositsSearchTopic,transaction)).block();
+
     }
 
     public Mono<Transaction> transfer(Transaction transaction) {
         transaction.setStatus(TRANSACTION_STATUS_PROCESSING);
 
-        return transactonRepository.save(transaction)
+        return transactionRepository.save(transaction)
                 .publishOn(Schedulers.boundedElastic())
                 .flatMap(tuple -> {
                     Deposit sourceAccount = depositRepostory.findById(transaction.getDepositIdFrom()).block();
@@ -95,7 +114,7 @@ public class DepositService {
 
                     if (sourceBalance.compareTo(transaction.getTotalTransactionAmount()) < 0) {
                         transaction.setStatus(TRANSACTION_STATUS_INSUFICIENT_FUNDS);
-                        return transactonRepository.save(transaction)
+                        return transactionRepository.save(transaction)
                                 .flatMap(savedTransaction -> Mono.<Transaction>error(new GlobalException("Insufficient funds")));
                     }
 
@@ -120,12 +139,13 @@ public class DepositService {
                             .flatMap(this::updateNuquiBalance)
                             .then(Mono.just(transaction));
                 })
+                .doOnNext(transaction1 -> kafkaProducer.send(depositsTransfersTopic,transaction1))
                 .flatMap(this::updateTransactionToCompleted);
     }
 
     private Mono<? extends Transaction> updateTransactionToCompleted(Transaction transactionToUpdate) {
         transactionToUpdate.setStatus(TRANSACTION_STATUS_COMPLETED);
-        return transactonRepository.save(transactionToUpdate);
+        return transactionRepository.save(transactionToUpdate);
     }
 
     private Mono<? extends Deposit> updateNuquiBalance(Deposit nuquiTechDeposit) {

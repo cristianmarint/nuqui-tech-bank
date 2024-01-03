@@ -27,13 +27,13 @@ public class DepositController {
     @Autowired
     private DepositService depositService;
 
-//    @ExceptionHandler(GlobalException.class)
+    @ExceptionHandler(GlobalException.class)
     @PostMapping(path = "/save", produces = APPLICATION_STREAM_JSON_VALUE)
     public Mono<Deposit> save(@Valid @RequestBody Mono<Deposit> depositMono) {
         return depositService.save(depositMono);
     }
 
-//    @ExceptionHandler(GlobalException.class)
+    @ExceptionHandler(GlobalException.class)
     @GetMapping(value = "/transactions", produces = APPLICATION_STREAM_JSON_VALUE)
     Flux<Transaction> getTransactions(
             @RequestParam(value = "account-from-id", defaultValue = "1") UUID accountFromId,
@@ -46,7 +46,7 @@ public class DepositController {
                 .delayElements(Duration.ofSeconds(1L));
     }
 
-    //    @ExceptionHandler(GlobalException.class)
+    @ExceptionHandler(GlobalException.class)
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, value = "/search/")
     public ResponseEntity<List<Deposit>> findByHumanIdOrUserId(
             @Param("humanId") Long humanId,

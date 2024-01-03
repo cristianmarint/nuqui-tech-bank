@@ -68,4 +68,7 @@ This project is licensed under the MIT License.
 ## Contact 📧
 For any inquiries or discussions, feel free to contact us at cristianmarint@gmail.com
 
+## Acknowledgements
+🚔Security was deliberately bypassed🚔
+
 Happy coding! 🚀🌟

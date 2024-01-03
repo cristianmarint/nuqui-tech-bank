@@ -9,7 +9,7 @@ import reactor.core.publisher.Flux;
 import java.util.UUID;
 
 @Repository
-public interface TransactonRepository extends ReactiveCrudRepository<Transaction, UUID> {
+public interface TransactionRepository extends ReactiveCrudRepository<Transaction, UUID> {
     @Query(value = "SELECT * FROM transactions WHERE deposit_id_from = :depositIdFrom LIMIT :limit OFFSET :offset")
     Flux<Transaction> findAllTransactionsByDepositIdFrom(UUID depositIdFrom, int limit, int offset);
 }
