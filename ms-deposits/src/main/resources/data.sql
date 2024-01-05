@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS transactions
     deposit_id_to            UUID,
 
     status            VARCHAR(255),
+    timestamp    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     human_id_from            VARCHAR(255),
     user_id_from             VARCHAR(560),

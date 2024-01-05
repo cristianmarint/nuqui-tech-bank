@@ -21,6 +21,16 @@ services:
     ports:
       - "5433:5432"
 
+  nuqui_postgres_batchprocess:
+    image: postgres:latest
+    container_name: nuqui_postgres_batchprocess
+    environment:
+      POSTGRES_DB: nuqui_batchprocess
+      POSTGRES_USER: another_appuser
+      POSTGRES_PASSWORD: another_appuser_password
+    ports:
+      - "5434:5432"
+
   nuqui_dynamodb_users:
     image: "amazon/dynamodb-local:latest"
     container_name: nuqui_dynamodb_users

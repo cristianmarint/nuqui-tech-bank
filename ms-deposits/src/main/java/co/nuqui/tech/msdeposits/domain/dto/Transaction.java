@@ -5,11 +5,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.UUID;
 
 @Data
@@ -25,6 +27,11 @@ public class Transaction {
     @Column("deposit_id_from")
     @NotNull
     private UUID depositIdFrom;
+
+    @CreatedDate
+    @Column("timestamp")
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Instant timestamp;
 
     @Column("deposit_id_to")
     @NotNull

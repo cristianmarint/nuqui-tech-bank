@@ -11,18 +11,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static co.nuqui.tech.msdeposits.domain.dto.DepositConstants.DEFAULT_NAME;
 import static co.nuqui.tech.msdeposits.domain.dto.TransferConstants.*;
 
+@SuppressWarnings("BlockingMethodInNonBlockingContext")
 @Service
 public class DepositService {
     private static final Logger logger = LoggerFactory.getLogger(DepositService.class);
@@ -51,8 +58,14 @@ public class DepositService {
     @Value("${nuqui.tech.kafka.deposits.transactions.topic}")
     private String depositsTransactionsTopic;
 
+    @Value("${nuqui.tech.kafka.deposits.transaction.file.created.topic}")
+    private String generateTransactionsFileByChronTopic;
+
     @Value("${nuqui.tech.kafka.deposits.transfer.topic}")
     private String depositsTransfersTopic;
+
+    @Value("${nuqui.tech.kafka.deposits.transaction.file.location}")
+    private String fileLocation;
 
     public Mono<Deposit> save(Mono<Deposit> deposit) {
         return deposit.flatMap(depositRepostory::save);
@@ -61,7 +74,7 @@ public class DepositService {
     public Flux<Transaction> findAllTransactionsByAccountFrom(UUID depositIdFrom, int limit, int offset) {
         return transactionRepository
                 .findAllTransactionsByDepositIdFrom(depositIdFrom, limit, offset)
-                .doOnNext(transaction -> kafkaProducer.send(depositsTransactionsTopic,transaction));
+                .doOnNext(transaction -> kafkaProducer.send(depositsTransactionsTopic, transaction));
     }
 
     public Mono<Deposit> createDepositForHuman(User user) {
@@ -86,13 +99,13 @@ public class DepositService {
         if (humanId != null) {
             logger.info("find deposits by humanId: {}", humanId);
             return depositRepostory.findByHumanId(humanId).collectList()
-                    .doOnNext(transaction -> kafkaProducer.send(depositsSearchTopic,transaction)).block();
+                    .doOnNext(transaction -> kafkaProducer.send(depositsSearchTopic, transaction)).block();
         }
 
         logger.info("find deposits by userId: {}", userId);
         return depositRepostory
                 .findByUserId(userId).collectList()
-                .doOnNext(transaction -> kafkaProducer.send(depositsSearchTopic,transaction)).block();
+                .doOnNext(transaction -> kafkaProducer.send(depositsSearchTopic, transaction)).block();
 
     }
 
@@ -105,7 +118,9 @@ public class DepositService {
                     Deposit sourceAccount = depositRepostory.findById(transaction.getDepositIdFrom()).block();
                     Deposit destinationAccount = depositRepostory.findById(transaction.getDepositIdTo()).block();
 
+                    assert sourceAccount != null;
                     BigDecimal sourceBalance = new BigDecimal(sourceAccount.getBalance());
+                    assert destinationAccount != null;
                     BigDecimal destinationBalance = new BigDecimal(destinationAccount.getBalance());
 
                     transaction.setFee(fixedFee);
@@ -145,11 +160,65 @@ public class DepositService {
     private Mono<? extends Transaction> updateTransactionToCompleted(Transaction transactionToUpdate) {
         transactionToUpdate.setStatus(TRANSACTION_STATUS_COMPLETED);
         return transactionRepository.save(transactionToUpdate)
-                .doOnNext(send -> kafkaProducer.send(depositsTransfersTopic,send));
+                .doOnNext(send -> kafkaProducer.send(depositsTransfersTopic, send));
     }
 
     private Mono<? extends Deposit> updateNuquiBalance(Deposit nuquiTechDeposit) {
         nuquiTechDeposit.setBalance(new BigDecimal(nuquiTechDeposit.getBalance()).add(fixedFee).toString());
         return depositRepostory.save(nuquiTechDeposit);
+    }
+
+    //    @Scheduled(cron = "${nuqui.tech.deposit.cron.generateTransactionsFileByChron.time-to-run}")
+    @Scheduled(fixedRate = 5000) // 5000 milliseconds = 5 seconds
+    public void generateTransactionsFileByChron() {
+        LocalDate today = LocalDate.now();
+        logger.info("generateTransactionsFileByChron: {}", today);
+        AtomicInteger count = new AtomicInteger(0);
+
+        File directory = new File(fileLocation);
+        if (!directory.exists()) directory.mkdirs();
+        String completeFilePath = directory + "/today-transactions-" + System.currentTimeMillis() + ".csv";
+
+        transactionRepository
+                .findAllTransactionsByDate(today.getYear(), today.getMonth().getValue(), today.getDayOfMonth())
+                .collectList()
+                .subscribe(transactions -> {
+                    generateCSV(transactions, completeFilePath);
+                    kafkaProducer.send(generateTransactionsFileByChronTopic, completeFilePath);
+                    logger.info("generateTransactionsFileByChron complete total transactions: {}", transactions.size());
+                });
+    }
+
+    private void generateCSV(List<Transaction> transactions, String fileLocation) {
+        try (FileWriter writer = new FileWriter(new File(fileLocation))) {
+            // Write column names
+            writer.append("id,deposit_id_from,timestamp,deposit_id_to,human_id_from,user_id_from,human_id_to,user_id_to,status,fee,fee_deposit_id_to,amount,total_transaction_amount,inicial_balance_from,final_balance_from,inicial_balance_to,final_balance_to\n");
+
+            // Write rows
+            for (Transaction transaction : transactions) {
+                writer.append(String.valueOf(transaction.getId())).append(',')
+                        .append(String.valueOf(transaction.getDepositIdFrom())).append(',')
+                        .append(String.valueOf(transaction.getTimestamp())).append(',')
+                        .append(String.valueOf(transaction.getDepositIdTo())).append(',')
+                        .append(String.valueOf(transaction.getHumanIdFrom())).append(',')
+                        .append(String.valueOf(transaction.getUserIdFrom())).append(',')
+                        .append(String.valueOf(transaction.getHumanIdTo())).append(',')
+                        .append(String.valueOf(transaction.getUserIdTo())).append(',')
+                        .append(String.valueOf(transaction.getStatus())).append(',')
+                        .append(String.valueOf(transaction.getFee())).append(',')
+                        .append(String.valueOf(transaction.getFeeDepositIdTo())).append(',')
+                        .append(String.valueOf(transaction.getAmount())).append(',')
+                        .append(String.valueOf(transaction.getTotalTransactionAmount())).append(',')
+                        .append(String.valueOf(transaction.getInicialBalanceFrom())).append(',')
+                        .append(String.valueOf(transaction.getFinalBalanceFrom())).append(',')
+                        .append(String.valueOf(transaction.getInicialBalanceTo())).append(',')
+                        .append(String.valueOf(transaction.getFinalBalanceTo())).append('\n');
+            }
+
+            System.out.println("CSV file generated at " + fileLocation);
+
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
     }
 }
