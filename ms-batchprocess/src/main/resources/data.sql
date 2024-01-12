@@ -6,6 +6,9 @@ CREATE TABLE IF NOT EXISTS deposit_transactions_batch
     deposit_id_to            UUID,
 
     status            VARCHAR(255),
+    batch_status            VARCHAR(255),
+    batch_file_pdf            VARCHAR(510),
+    batch_file_csv            VARCHAR(510),
     timestamp    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     human_id_from            VARCHAR(255),

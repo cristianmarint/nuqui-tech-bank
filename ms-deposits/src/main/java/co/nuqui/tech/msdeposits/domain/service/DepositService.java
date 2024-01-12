@@ -27,7 +27,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static co.nuqui.tech.msdeposits.domain.dto.DepositConstants.DEFAULT_NAME;
-import static co.nuqui.tech.msdeposits.domain.dto.TransferConstants.*;
+import static co.nuqui.tech.msdeposits.domain.dto.TransactionConstants.*;
 
 @SuppressWarnings("BlockingMethodInNonBlockingContext")
 @Service
@@ -64,7 +64,7 @@ public class DepositService {
     @Value("${nuqui.tech.kafka.deposits.transfer.topic}")
     private String depositsTransfersTopic;
 
-    @Value("${nuqui.tech.kafka.deposits.transaction.file.location}")
+    @Value("${nuqui.tech.kafka.deposits.transaction.file.csv.location}")
     private String fileLocation;
 
     public Mono<Deposit> save(Mono<Deposit> deposit) {

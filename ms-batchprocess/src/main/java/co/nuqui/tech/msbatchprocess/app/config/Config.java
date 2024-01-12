@@ -1,5 +1,7 @@
-package co.nuqui.tech.msbatchprocess.EJEMPLO.config;
+package co.nuqui.tech.msbatchprocess.app.config;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.support.JobRepositoryFactoryBean;
 import org.springframework.context.annotation.Bean;
@@ -11,6 +13,8 @@ import javax.sql.DataSource;
 
 @Configuration
 public class Config {
+    private Logger logger = LoggerFactory.getLogger(Config.class);
+
     @Bean
     public JobRepository jobRepository(DataSource dataSource, PlatformTransactionManager transactionManager) throws Exception {
         JobRepositoryFactoryBean factory = new JobRepositoryFactoryBean();
@@ -23,6 +27,9 @@ public class Config {
 
     @Bean
     public PlatformTransactionManager transactionManager(DataSource dataSource) {
-        return new DataSourceTransactionManager(dataSource);
+        logger.info("Initializing transaction manager with dataSource: {}", dataSource);
+        DataSourceTransactionManager transactionManager = new DataSourceTransactionManager(dataSource);
+        logger.info("Transaction manager initialized: {}", transactionManager != null);
+        return transactionManager;
     }
 }

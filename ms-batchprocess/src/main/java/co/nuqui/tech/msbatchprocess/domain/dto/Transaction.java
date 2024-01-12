@@ -1,6 +1,7 @@
 package co.nuqui.tech.msbatchprocess.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -19,6 +20,7 @@ import java.time.Instant;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Table(schema = "deposit_transactions_batch")
 public class Transaction {
 
@@ -26,6 +28,10 @@ public class Transaction {
     @Column("id")
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String id;
+
+    @Column("transaction_id")
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private String transactionId;
 
     @Column("deposit_id_from")
     @NotNull
@@ -59,6 +65,18 @@ public class Transaction {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String status;
 
+    @Column("batch_status")
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private String batchStatus;
+
+    @Column("batch_file_pdf")
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private String batchFilePdf;
+
+    @Column("batch_file_csv")
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private String batchFileCSV;
+
     @Column("fee")
     private String fee;
 
@@ -88,8 +106,4 @@ public class Transaction {
     @Column("final_balance_to")
     @JsonIgnore
     private String finalBalanceTo;
-
-    @Column("file_location")
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private String fileLocation;
 }

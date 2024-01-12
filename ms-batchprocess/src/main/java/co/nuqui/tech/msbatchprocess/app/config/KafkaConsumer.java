@@ -1,7 +1,6 @@
 package co.nuqui.tech.msbatchprocess.app.config;
 
-import co.nuqui.tech.msbatchprocess.domain.dto.Transaction;
-import co.nuqui.tech.msbatchprocess.domain.service.HandlerTransactionsService;
+import co.nuqui.tech.msbatchprocess.domain.service.JobsHandlerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
@@ -18,11 +17,11 @@ import org.springframework.stereotype.Component;
 public class KafkaConsumer {
 
     @Autowired
-    private HandlerTransactionsService service;
+    private JobsHandlerService service;
 
     @KafkaListener(topics = "deposits.transaction.file.created", groupId = "nuqui.tech")
-    public void flightEventConsumer(@Payload String fileLocation) throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
-        log.info("Kafka event deposits.transaction.file.created message -> {}", fileLocation);
-        service.handlerTransactionFileCreated(fileLocation);
+    public void flightEventConsumer(@Payload String batchFileCSV) throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
+        log.info("Kafka event deposits.transaction.file.created message -> {}", batchFileCSV);
+        service.handlerTransactionFileJob(batchFileCSV);
     }
 }

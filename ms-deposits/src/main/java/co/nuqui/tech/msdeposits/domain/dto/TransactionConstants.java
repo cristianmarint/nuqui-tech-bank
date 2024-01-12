@@ -1,6 +1,6 @@
 package co.nuqui.tech.msdeposits.domain.dto;
 
-public class TransferConstants {
+public class TransactionConstants {
     public static final String TRANSACTION_STATUS_INSUFICIENT_FUNDS = "TRANSACTION_STATUS_INSUFICIENT_FUNDS";
     public static final String TRANSACTION_STATUS_COMPLETED = "TRANSACTION_STATUS_COMPLETED";
     public static final String TRANSACTION_STATUS_PROCESSING = "TRANSACTION_STATUS_PROCESSING";
