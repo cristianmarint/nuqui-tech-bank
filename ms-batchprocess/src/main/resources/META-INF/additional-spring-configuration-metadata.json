@@ -1,0 +1,13 @@
+{
+  "properties": [
+    {
+      "name": "nuqui.tech.kafka.deposits.transaction.file.location",
+      "type": "java.lang.String",
+      "description": "Description for nuqui.tech.kafka.deposits.transaction.file.location."
+    },
+    {
+      "name": "nuqui.tech.kafka.deposits.transaction.file.created.topic",
+      "type": "java.lang.String",
+      "description": "Description for nuqui.tech.kafka.deposits.transaction.file.created.topic."
+    }
+  ] }

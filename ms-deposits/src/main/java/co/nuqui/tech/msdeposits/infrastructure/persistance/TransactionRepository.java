@@ -6,8 +6,6 @@ import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 
-import java.time.Month;
-import java.util.List;
 import java.util.UUID;
 
 @Repository
@@ -15,6 +13,6 @@ public interface TransactionRepository extends ReactiveCrudRepository<Transactio
     @Query(value = "SELECT * FROM transactions WHERE deposit_id_from = :depositIdFrom LIMIT :limit OFFSET :offset")
     Flux<Transaction> findAllTransactionsByDepositIdFrom(UUID depositIdFrom, int limit, int offset);
 
-@Query("SELECT * FROM transactions WHERE date_trunc('day', timestamp) = to_date(:year || '-' || :month || '-' || :dayOfMonth, 'YYYY-MM-DD')")
-Flux<Transaction> findAllTransactionsByDate(int year, int  month, int dayOfMonth);
+    @Query("SELECT * FROM transactions WHERE date_trunc('day', timestamp) = to_date(:year || '-' || :month || '-' || :dayOfMonth, 'YYYY-MM-DD')")
+    Flux<Transaction> findAllTransactionsByDate(int year, int month, int dayOfMonth);
 }
