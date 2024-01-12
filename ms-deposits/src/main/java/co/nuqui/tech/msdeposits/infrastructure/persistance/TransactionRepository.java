@@ -12,4 +12,7 @@ import java.util.UUID;
 public interface TransactionRepository extends ReactiveCrudRepository<Transaction, UUID> {
     @Query(value = "SELECT * FROM transactions WHERE deposit_id_from = :depositIdFrom LIMIT :limit OFFSET :offset")
     Flux<Transaction> findAllTransactionsByDepositIdFrom(UUID depositIdFrom, int limit, int offset);
+
+    @Query("SELECT * FROM transactions WHERE date_trunc('day', timestamp) = to_date(:year || '-' || :month || '-' || :dayOfMonth, 'YYYY-MM-DD')")
+    Flux<Transaction> findAllTransactionsByDate(int year, int month, int dayOfMonth);
 }

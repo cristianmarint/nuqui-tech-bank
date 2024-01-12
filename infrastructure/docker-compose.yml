@@ -16,10 +16,20 @@ services:
     container_name: nuqui_postgres_deposits
     environment:
       POSTGRES_DB: nuqui_deposits
-      POSTGRES_USER: another_appuser
-      POSTGRES_PASSWORD: another_appuser_password
+      POSTGRES_USER: deposits_appuser
+      POSTGRES_PASSWORD: deposits_appuser_password
     ports:
       - "5433:5432"
+
+  nuqui_postgres_batchprocess:
+    image: postgres:latest
+    container_name: nuqui_postgres_batchprocess
+    environment:
+      POSTGRES_DB: nuqui_batchprocess
+      POSTGRES_USER: batchprocess_appuser
+      POSTGRES_PASSWORD: batchprocess_appuser_password
+    ports:
+      - "5434:5432"
 
   nuqui_dynamodb_users:
     image: "amazon/dynamodb-local:latest"

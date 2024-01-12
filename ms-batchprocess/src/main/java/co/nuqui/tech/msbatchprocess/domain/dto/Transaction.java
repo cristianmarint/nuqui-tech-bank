@@ -1,44 +1,53 @@
-package co.nuqui.tech.msdeposits.domain.dto;
+package co.nuqui.tech.msbatchprocess.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.apache.kafka.common.protocol.types.Field;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
-import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.UUID;
 
 @Data
 @Builder
-@Table("transactions")
+@AllArgsConstructor
+@NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@Table(schema = "deposit_transactions_batch")
 public class Transaction {
 
     @Id
     @Column("id")
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private UUID id;
+    private String id;
+
+    @Column("transaction_id")
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private String transactionId;
 
     @Column("deposit_id_from")
     @NotNull
-    private UUID depositIdFrom;
+    private String depositIdFrom;
 
     @CreatedDate
     @Column("timestamp")
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private Instant timestamp;
+    private String timestamp;
 
     @Column("deposit_id_to")
     @NotNull
-    private UUID depositIdTo;
+    private String depositIdTo;
 
     @Column("human_id_from")
-    private Long humanIdFrom;
+    private String humanIdFrom;
 
     @Column("user_id_from")
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
@@ -46,7 +55,7 @@ public class Transaction {
 
     @Column("human_id_to")
     @JsonIgnore
-    private Long humanIdTo;
+    private String humanIdTo;
 
     @Column("user_id_to")
     @JsonIgnore
@@ -56,33 +65,45 @@ public class Transaction {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String status;
 
+    @Column("batch_status")
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private String batchStatus;
+
+    @Column("batch_file_pdf")
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private String batchFilePdf;
+
+    @Column("batch_file_csv")
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private String batchFileCSV;
+
     @Column("fee")
-    private BigDecimal fee;
+    private String fee;
 
     @Column("fee_deposit_id_to")
     @JsonIgnore
-    private UUID feeDepositIdTo;
+    private String feeDepositIdTo;
 
     @Column("amount")
-    private BigDecimal amount;
+    private String amount;
 
     @Column("total_transaction_amount")
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private BigDecimal totalTransactionAmount;
+    private String totalTransactionAmount;
 
     @Column("inicial_balance_from")
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private BigDecimal inicialBalanceFrom;
+    private String inicialBalanceFrom;
 
     @Column("final_balance_from")
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private BigDecimal finalBalanceFrom;
+    private String finalBalanceFrom;
 
     @Column("inicial_balance_to")
     @JsonIgnore
-    private BigDecimal inicialBalanceTo;
+    private String inicialBalanceTo;
 
     @Column("final_balance_to")
     @JsonIgnore
-    private BigDecimal finalBalanceTo;
+    private String finalBalanceTo;
 }
