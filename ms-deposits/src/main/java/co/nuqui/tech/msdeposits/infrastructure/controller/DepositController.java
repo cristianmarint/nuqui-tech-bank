@@ -18,7 +18,7 @@ import java.util.UUID;
 
 import static co.nuqui.tech.msdeposits.infrastructure.controller.Mappings.URL_DEPOSITS_V1;
 import static org.springframework.http.HttpStatus.OK;
-import static org.springframework.http.MediaType.APPLICATION_STREAM_JSON_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_NDJSON_VALUE;
 
 @RestController
 @RequestMapping(value = URL_DEPOSITS_V1)
@@ -28,13 +28,13 @@ public class DepositController {
     private DepositService depositService;
 
     @ExceptionHandler(GlobalException.class)
-    @PostMapping(path = "/save", produces = APPLICATION_STREAM_JSON_VALUE)
+    @PostMapping(path = "/save", produces = APPLICATION_NDJSON_VALUE)
     public Mono<Deposit> save(@Valid @RequestBody Mono<Deposit> depositMono) {
         return depositService.save(depositMono);
     }
 
     @ExceptionHandler(GlobalException.class)
-    @GetMapping(value = "/transactions", produces = APPLICATION_STREAM_JSON_VALUE)
+    @GetMapping(value = "/transactions", produces = APPLICATION_NDJSON_VALUE)
     Flux<Transaction> getTransactions(
             @RequestParam(value = "account-from-id", defaultValue = "1") UUID accountFromId,
             @RequestParam(value = "page", defaultValue = "1") int page,

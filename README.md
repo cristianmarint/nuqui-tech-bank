@@ -36,6 +36,8 @@ aws dynamodb put-item --table-name users --item '{\"deletedAt\": {\"S\": \"\"},\
 
 import from ```./infrastructure``` the postman collection
 
+./run_services.bat
+
 ## Microservices Architecture 🏗️
 The project is structured into individual microservices, each responsible for a specific business domain or functionality. Key features include:
 
